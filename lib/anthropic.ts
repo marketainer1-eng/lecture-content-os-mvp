@@ -53,8 +53,15 @@ export async function generateLectureContent(input: GenerateContentInput): Promi
 }`
 
   const response = await client.messages.create({
-    model: 'claude-opus-4-7',
+    model: 'claude-opus-4-8',
     max_tokens: 2000,
+    system: [
+      {
+        type: 'text',
+        text: '당신은 강의 콘텐츠 전문 마케터입니다. 강의 사진과 정보를 바탕으로 각 플랫폼에 최적화된 한국어 콘텐츠를 생성합니다. 반드시 요청한 JSON 형식만 반환하세요.',
+        cache_control: { type: 'ephemeral' },
+      },
+    ],
     messages: [
       {
         role: 'user',

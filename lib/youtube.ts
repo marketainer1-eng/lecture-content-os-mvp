@@ -42,6 +42,11 @@ export async function uploadYouTubeShorts(
     .download(videoStoragePath)
   if (error) throw new Error(`동영상 다운로드 실패: ${error.message}`)
 
+  // Convert Web API Blob → Node.js Readable (googleapis requires Node stream)
+  const { Readable } = await import('stream')
+  const nodeStream = Readable.from(Buffer.from(await data.arrayBuffer()))
+  const mimeType = data.type || 'video/mp4'
+
   const shortsTitle = title.length <= 50 ? title : title.slice(0, 47) + '...'
   const shortsDescription = `${description}\n\n#Shorts`
 
@@ -58,8 +63,8 @@ export async function uploadYouTubeShorts(
       status: { privacyStatus: 'public' },
     },
     media: {
-      mimeType: 'video/mp4',
-      body: data.stream(),
+      mimeType,
+      body: nodeStream,
     },
   })
 
